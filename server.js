@@ -23,7 +23,7 @@ const io = new SocketIOServer(undefined, {
     ],
   },
 });
-console.log({ key, cert });
+// Only if it on local
 const httpServer = new HttpsServer({ key, cert }, app);
 
 const peerServer = ExpressPeerServer(httpServer, {

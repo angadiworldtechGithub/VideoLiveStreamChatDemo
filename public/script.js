@@ -25,6 +25,7 @@ $(() => {
       audio: true,
     })
     .then((stream) => {
+      // not working over ssl
       console.log("Got video stream");
       myVideoStream = stream;
       addVideoStream(myVideo, stream);
