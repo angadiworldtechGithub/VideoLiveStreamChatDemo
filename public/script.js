@@ -58,7 +58,7 @@ $(() => {
     })
     .catch((error) => {
       // code to show that the feed is broken.
-      console.error(error);
+      console.trace(error);
     });
 
   socket.on("user-disconnected", (userId) => {

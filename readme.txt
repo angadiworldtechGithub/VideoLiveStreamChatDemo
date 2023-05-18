@@ -1,0 +1,1 @@
+Before using the application add the ca cert to your computers trusted store.

@@ -31,6 +31,11 @@ const peerServer = ExpressPeerServer(httpServer, {
   port: PEER_PORT,
 });
 
+app.use((req, res, next) => {
+  res.append("Permissions-Policy", "camera=(self)");
+  res.append("Permissions-Policy", "microphone=(self)");
+  next();
+});
 app.use(cors());
 app.use("/peerjs", peerServer);
 app.set("view engine", "ejs");
