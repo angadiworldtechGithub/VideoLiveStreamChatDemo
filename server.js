@@ -39,25 +39,28 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use("/peerjs", peerServer);
 app.set("view engine", "ejs");
-app.use(express.static("public"));
+app.use("/", express.static("public"));
 app.get("/", (req, res) => {
-  res.redirect(`/${uuidV4()}`);
+  res.redirect(`/${uuidV4()}/${uuidV4()}`);
 });
-app.get("/:room", (req, res) => {
-  res.render("room", { roomId: req.params.room });
+app.get("/:roomId", (req, res) => {
+  res.redirect(`/${req.params.roomId}/${uuidV4()}`);
+});
+app.get("/:roomId/:userId", (req, res) => {
+  res.render("room", { roomId: req.params.roomId, userId: req.params.userId });
 });
 
 io.on("connection", (socket) => {
   console.log("CONNECT CREATED");
   socket.on("join-room", (roomId, userId) => {
+    console.log(`User - ${userId} connecting to ${roomId}`);
     socket.join(roomId);
     socket.to(roomId).emit("user-connected", userId);
     // messages
-    socket.on("message", (message) => {
+    socket.on("message", (message, userId) => {
       //send message to the same room
-      io.to(roomId).emit("createMessage", message);
+      io.to(roomId).emit("createMessage", message, userId);
     });
-
     socket.on("disconnect", () => {
       socket.to(roomId).emit("user-disconnected", userId);
     });
@@ -71,12 +74,9 @@ httpServer.listen(EXPRESS_PORT, () => {
 io.listen(SOCKET_IO_PORT);
 console.log("Socket.io is running");
 
-httpServer.on("request", (req) => {
-  console.log("Incoming Request");
-  console.log(req.method);
-});
+// httpServer.on("request", (req) => {
+//   console.log("Incoming Request");
+//   console.log(req.method);
+// });
 
-// Peerjs generates the user id.
-// On load the room id is generated and must be shared.
 // users can join the room
-// seperate the servers to fix the issue.

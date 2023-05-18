@@ -5,17 +5,11 @@ let myVideoStream;
 const peers = {};
 const SOCKET_IO_PORT = 4000;
 
-// needs ssl to run on chrome and firefox
+// seperate chat from user
 
 $(() => {
   const socket = io(`ws://localhost:${SOCKET_IO_PORT}`);
   videoGrid = document.getElementById("video-grid");
-  myPeer = new Peer(undefined, {
-    path: "/peerjs",
-    host: "/",
-    port: "3030",
-  });
-  // Peerjs creates the id
   myVideo = document.createElement("video");
   myVideo.muted = true;
 
@@ -25,10 +19,14 @@ $(() => {
       audio: true,
     })
     .then((stream) => {
-      // not working over ssl
-      console.log("Got video stream");
-      myVideoStream = stream;
-      addVideoStream(myVideo, stream);
+      console.log("Video Stream Acquired");
+
+      myPeer = new Peer(USER_ID, {
+        path: "/peerjs",
+        host: "/",
+        port: "3030",
+      });
+
       myPeer.on("call", (call) => {
         call.answer(stream);
         const video = document.createElement("video");
@@ -37,50 +35,62 @@ $(() => {
         });
       });
 
-      // socket handlers not being added since the promise is not loading
+      myPeer.on("open", (id) => {
+        console.info(`User - ${id} is joining room ${ROOM_ID}`);
+        socket.emit("join-room", ROOM_ID, id);
+      });
+
+      myPeer.on("error", (error) => console.error(error));
 
       socket.on("user-connected", (userId) => {
+        console.info(`User - ${userId} is Connecting`);
         connectToNewUser(userId, stream);
       });
-      // input value
-      let text = $("input");
-      // when press enter send message
-      $("html").keydown(function (e) {
-        if (e.which == 13 && text.val().length !== 0) {
-          socket.emit("message", text.val());
-          text.val("");
-        }
-      });
-      socket.on("createMessage", (message) => {
-        $("ul").append(`<li class="message"><b>user</b><br/>${message}</li>`);
-        scrollToBottom();
-      });
+
+      myVideoStream = stream;
+      addVideoStream(myVideo, stream);
     })
     .catch((error) => {
       // code to show that the feed is broken.
-      console.trace(error);
+      console.error(error);
     });
 
   socket.on("user-disconnected", (userId) => {
     if (peers[userId]) peers[userId].close();
   });
 
-  myPeer.on("open", (id) => {
-    socket.emit("join-room", ROOM_ID, id);
+  // input value
+  let text = $("input");
+  // when press enter send message
+  $("html").keydown(function (e) {
+    if (e.which == 13 && text.val().length !== 0) {
+      socket.emit("message", text.val(), USER_ID);
+      text.val("");
+    }
+  });
+  socket.on("createMessage", (message, userId) => {
+    $("ul").append(
+      `<li class="message"><b>User - <span class="user_id">${userId}</span></b><br/>${message}</li>`
+    );
+    scrollToBottom();
   });
 });
 
 function connectToNewUser(userId, stream) {
-  const call = myPeer.call(userId, stream);
-  const video = document.createElement("video");
-  call.on("stream", (userVideoStream) => {
-    addVideoStream(video, userVideoStream);
-  });
-  call.on("close", () => {
-    video.remove();
-  });
-
-  peers[userId] = call;
+  if (myPeer) {
+    const call = myPeer.call(userId, stream);
+    console.log(call);
+    const video = document.createElement("video");
+    call.on("stream", (userVideoStream) => {
+      addVideoStream(video, userVideoStream);
+    });
+    call.on("close", () => {
+      video.remove();
+    });
+    peers[userId] = call;
+  } else {
+    console.error("My Peer not initialised");
+  }
 }
 
 function addVideoStream(video, stream) {
@@ -97,25 +107,33 @@ const scrollToBottom = () => {
 };
 
 const muteUnmute = () => {
-  const enabled = myVideoStream.getAudioTracks()[0].enabled;
-  if (enabled) {
-    myVideoStream.getAudioTracks()[0].enabled = false;
-    setUnmuteButton();
+  if (myVideoStream) {
+    const enabled = myVideoStream.getAudioTracks()[0].enabled;
+    if (enabled) {
+      myVideoStream.getAudioTracks()[0].enabled = false;
+      setUnmuteButton();
+    } else {
+      setMuteButton();
+      myVideoStream.getAudioTracks()[0].enabled = true;
+    }
   } else {
-    setMuteButton();
-    myVideoStream.getAudioTracks()[0].enabled = true;
+    console.error("Video not Enabled");
   }
 };
 
 const playStop = () => {
-  console.log("Video Stopped");
-  let enabled = myVideoStream.getVideoTracks()[0].enabled;
-  if (enabled) {
-    myVideoStream.getVideoTracks()[0].enabled = false;
-    setPlayVideo();
+  if (myVideoStream) {
+    console.log("Video Stopped");
+    let enabled = myVideoStream.getVideoTracks()[0].enabled;
+    if (enabled) {
+      myVideoStream.getVideoTracks()[0].enabled = false;
+      setPlayVideo();
+    } else {
+      setStopVideo();
+      myVideoStream.getVideoTracks()[0].enabled = true;
+    }
   } else {
-    setStopVideo();
-    myVideoStream.getVideoTracks()[0].enabled = true;
+    console.error("Video not Enabled");
   }
 };
 
