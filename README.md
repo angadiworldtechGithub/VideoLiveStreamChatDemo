@@ -1,4 +1,4 @@
-# Angida Video Live Stream Chat Demo
+# Angadi Video Live Stream Chat Demo
 
 Inspired by (https://www.youtube.com/watch?v=DvlyzDZDEq4)
 
