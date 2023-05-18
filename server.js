@@ -31,6 +31,10 @@ const peerServer = ExpressPeerServer(httpServer, {
   port: PEER_PORT,
 });
 
+peerServer.on("connection", (client) => {
+  console.log(`Peer Client Connected - ${JSON.stringify(client.getId())}`);
+});
+
 app.use((req, res, next) => {
   res.append("Permissions-Policy", "camera=(self)");
   res.append("Permissions-Policy", "microphone=(self)");
@@ -54,11 +58,12 @@ io.on("connection", (socket) => {
   console.log("CONNECT CREATED");
   socket.on("join-room", (roomId, userId) => {
     console.log(`User - ${userId} connecting to ${roomId}`);
+
     socket.join(roomId);
     socket.to(roomId).emit("user-connected", userId);
     // messages
     socket.on("message", (message, userId) => {
-      //send message to the same room
+      // send message to everyone in the same room
       io.to(roomId).emit("createMessage", message, userId);
     });
     socket.on("disconnect", () => {
@@ -79,4 +84,7 @@ console.log("Socket.io is running");
 //   console.log(req.method);
 // });
 
-// users can join the room
+// Users can join the room
+// Users can open a peer connection and call other users.
+// Initial communication happens via socket.io
+// When new user joins, every other user calls that user with his/her userId
