@@ -1,6 +1,13 @@
 .main {
-  height: 100vh;
-  overflow: scroll;
+  display: inline;
+}
+
+.mid_body {
+  display: flex;
+}
+
+.banner {
+  height: 50px;
 }
 .controls {
   background-color: grey;
@@ -8,69 +15,104 @@
   width: 40%;
   border-radius: 20px;
   margin-left: 15%;
+  padding: 10px;
+  margin-bottom: 5%;
 }
 
-.main__controls__block {
+.controls__block {
   display: flex;
 }
 
-.main__controls__button {
+.controls__button {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   min-width: 20px;
   cursor: pointer;
-  padding-left: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
-.main__controls__button:hover {
+.controls__button:hover {
   background-color: #343434;
   border-radius: 5px;
 }
 
-.main__controls__button i {
-  font-size: 20px;
+.controls__button i {
+  font-size: 15px;
+}
+
+.controls__button span {
+  font-size: 15px;
 }
 
 .chat_window {
-  flex-grow: 1;
-  overflow-y: auto;
   bottom: 10px;
   left: 10px;
   position: absolute;
+  min-width: 50%;
+  height: 100%;
 }
 
 .messages {
+  overflow-y: scroll;
   color: black;
   list-style: none;
   z-index: 100;
-  position: relative;
+  position: absolute;
+  bottom: 50px;
+  width: 65%;
+  height: 85%;
 }
 
-.message_container {
-  display: flex;
+.participants {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  position: relative;
+  left: 200px;
+  width: 30%;
+  border-radius: 50px;
+  padding: 20px;
+}
+
+.participants ul {
+  list-style-type: none;
+}
+
+.input_box {
   background-color: white;
   z-index: 100;
-  border: black;
-  border-radius: 22px;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 15px;
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  bottom: 0px;
 }
 
 .message_container input {
-  flex-grow: 1;
-
-  color: black;
+  width: 100%;
 }
 
-.leave_meeting {
+.leave__meeting {
   color: #eb534b;
 }
 
+.leave__meeting__button {
+  margin-left: 30px;
+}
+
 .unmute,
-.stop {
+.stop,
+.hide {
   color: #cc3b33;
+}
+
+.hidden {
+  display: none;
 }
 
 .user_id {
@@ -85,20 +127,21 @@
 
 #user-video > video {
   position: absolute;
-  left: -7.5vw;
-  top: -7.5vw;
-  height: 55vw;
-  width: 65vw;
+  left: -5vw;
+  top: -2.5vw;
+  height: 40vw;
+  width: 60vw;
 }
 
 #user-video {
   position: relative;
   overflow: hidden;
   border-radius: 0.7vw;
-  height: 40vw;
+  height: 35vw;
   width: 50vw;
   left: 10%;
-  top: 5%;
+  top: 10%;
+  margin-bottom: 30px;
 }
 .video-pip {
   position: relative;

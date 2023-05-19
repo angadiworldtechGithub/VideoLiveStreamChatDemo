@@ -11,6 +11,8 @@ const PEER_PORT = 3030;
 const EXPRESS_PORT = 3030;
 const SOCKET_IO_PORT = 4000;
 
+const IP_ADD = "198.168.1.11";
+
 const key = fs.readFileSync("./cert.key");
 const cert = fs.readFileSync("./cert.crt");
 
@@ -20,6 +22,7 @@ const io = new SocketIOServer(undefined, {
     origin: [
       `http://localhost:${EXPRESS_PORT}`,
       `https://localhost:${EXPRESS_PORT}`,
+      `https://${IP_ADD}:${EXPRESS_PORT}`,
     ],
   },
 });
@@ -45,13 +48,21 @@ app.use("/peerjs", peerServer);
 app.set("view engine", "ejs");
 app.use("/", express.static("public"));
 app.get("/", (req, res) => {
-  res.redirect(`/${uuidV4()}/${uuidV4()}`);
+  res.redirect("/room");
 });
-app.get("/:roomId", (req, res) => {
-  res.redirect(`/${req.params.roomId}/${uuidV4()}`);
+app.get("/room", (req, res) => {
+  res.redirect(`/room/${uuidV4()}/${uuidV4()}`);
 });
-app.get("/:roomId/:userId", (req, res) => {
+app.get("/room/:roomId", (req, res) => {
+  res.redirect(`/room/${req.params.roomId}/${uuidV4()}`);
+});
+app.get("/room/:roomId/:userId", (req, res) => {
   res.render("room", { roomId: req.params.roomId, userId: req.params.userId });
+});
+app.get("/disconnected_page", (req, res) => {
+  res.send(
+    "<body style='display:flex;justify-content:center;align-items:center'><h1>Disconnected</h1></body>"
+  );
 });
 
 io.on("connection", (socket) => {
@@ -72,7 +83,7 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(EXPRESS_PORT, () => {
+httpServer.listen(EXPRESS_PORT, "198.168.1.11", () => {
   console.log("Server is running");
 });
 

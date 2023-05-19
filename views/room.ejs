@@ -32,56 +32,57 @@
     <link rel="stylesheet" href="/style.css" />
     <script src="https://kit.fontawesome.com/c939d0e917.js"></script>
     <script src="/script.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
   </head>
   <body>
-    <div class="main">
-      <div id="user-video">
-        <div class="chat_window">
-          <ul class="messages"></ul>
-          <div class="message_container">
-            <input id="chat_message" type="text" placeholder="Post Questions" />
+      <div class="banner">
+        <img src="\assets\images\logo.png" style="height:100%;margin-left: 10px;margin-top: 10px;">
+        <h4 style="float:right;margin:10px"><%= userId %></h4>
+      </div>
+      <div class="mid_body">
+        <div id="user-video">
+          <div class="chat_window">
+            <div class="messages">
+              <ul class="messages_list"></ul>
+            </div>
+            <div class="input_box">
+              <input id="chat_message" type="text" placeholder="Post Questions" />
+            </div>
           </div>
+          <div id="video-grid"></div>
         </div>
-
-        <div id="video-grid"></div>
+        <div class="participants">
+          <ul></ul>
+        </div>
       </div>
     </div>
     <div class="controls">
-      <div class="main__controls__block">
         <div
           onclick="muteUnmute()"
-          class="main__controls__button main__mute_button"
+          class="controls__button mute_button"
         >
           <i class="fas fa-microphone"></i>
           <span>Mute</span>
         </div>
         <div
           onclick="playStop()"
-          class="main__controls__button main__video_button"
+          class="controls__button video_button"
         >
           <i class="fas fa-video"></i>
           <span>Stop Video</span>
         </div>
-      </div>
-      <div class="main__controls__block">
-        <div class="main__controls__button">
-          <i class="fas fa-shield-alt"></i>
-          <span>Security</span>
-        </div>
-        <div class="main__controls__button">
-          <i class="fas fa-user-friends"></i>
+        <div onclick="showHideParticipants()" class="controls__button">
+          <i class="fas fa-user-friends participant_button"></i>
           <span>Participants</span>
         </div>
-        <div class="main__controls__button">
+        <div class="controls__button chat_button" onclick="showHideChat()">
           <i class="fas fa-comment-alt"></i>
           <span>Chat</span>
         </div>
-      </div>
-      <div class="main__controls__block">
-        <div class="main__controls__button">
-          <span class="leave_meeting" style="float: right">Leave Meeting</span>
+        <div class="controls__button leave__meeting__button" onclick="leaveMeetingButton()">
+          <span class="leave__meeting">Leave Meeting</span>
         </div>
-      </div>
     </div>
   </body>
 </html>

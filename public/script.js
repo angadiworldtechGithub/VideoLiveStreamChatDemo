@@ -18,7 +18,7 @@ $(() => {
 
   navigator.mediaDevices
     .getUserMedia({
-      video: { width: 1200, height: 1000 },
+      video: { width: 1200, height: 1000, facingMode: "user" }, // Facing Mode is User
       audio: true,
     })
     .then((stream) => {
@@ -32,11 +32,13 @@ $(() => {
 
       myPeer.on("open", (id) => {
         console.info(`User - ${id} is joining room ${ROOM_ID}`);
+        addUser(id);
         socket.emit("join-room", ROOM_ID, id);
       });
 
       myPeer.on("call", (call) => {
         console.log("Receiving a call");
+        addUser(call.peer);
         call.answer(stream);
         const video = document.createElement("video");
         call.on("stream", streamHandler(video));
@@ -58,7 +60,10 @@ $(() => {
     });
 
   socket.on("user-disconnected", (userId) => {
-    if (peers[userId]) peers[userId].close();
+    if (peers[userId]) {
+      peers[userId][0].close();
+      removeVideo(peers[userId][1]);
+    }
   });
 
   // input value
@@ -71,7 +76,7 @@ $(() => {
     }
   });
   socket.on("createMessage", (message, userId) => {
-    $("ul").append(
+    $(".messages").append(
       `<li class="message"><b>User - <span class="user_id">${userId}</span></b><br/>${message}</li>`
     );
     scrollToBottom();
@@ -84,13 +89,12 @@ function connectToNewUser(userId, stream) {
     const call = myPeer.call(userId, stream);
     const video = document.createElement("video");
     call.on("stream", streamHandler(video));
-
     call.on("close", () => {
       console.log("Call closing");
-      video.parentElement.remove();
-      video.remove();
+      removeVideo(video);
     });
-    peers[userId] = call;
+    peers[userId] = [call, video];
+    addUser(userId);
   } else {
     console.error("My Peer not initialised");
   }
@@ -122,7 +126,7 @@ function streamHandler(video) {
 }
 
 const scrollToBottom = () => {
-  var d = $(".main__chat_window");
+  var d = $(".chat_window");
   d.scrollTop(d.prop("scrollHeight"));
 };
 
@@ -164,7 +168,7 @@ const setMuteButton = () => {
     <i class="fas fa-microphone"></i>
     <span>Mute</span>
   `;
-  document.querySelector(".main__mute_button").innerHTML = html;
+  document.querySelector(".mute_button").innerHTML = html;
 };
 
 const setUnmuteButton = () => {
@@ -172,7 +176,7 @@ const setUnmuteButton = () => {
     <i class="unmute fas fa-microphone-slash"></i>
     <span>Unmute</span>
   `;
-  document.querySelector(".main__mute_button").innerHTML = html;
+  document.querySelector(".mute_button").innerHTML = html;
 };
 
 const setStopVideo = () => {
@@ -180,7 +184,7 @@ const setStopVideo = () => {
     <i class="fas fa-video"></i>
     <span>Stop Video</span>
   `;
-  document.querySelector(".main__video_button").innerHTML = html;
+  document.querySelector(".video_button").innerHTML = html;
 };
 
 const setPlayVideo = () => {
@@ -188,5 +192,46 @@ const setPlayVideo = () => {
   <i class="stop fas fa-video-slash"></i>
     <span>Play Video</span>
   `;
-  document.querySelector(".main__video_button").innerHTML = html;
+  document.querySelector(".video_button").innerHTML = html;
+};
+
+const showHideChat = () => {
+  const chatWindow = document.querySelector(".chat_window");
+  if (!chatWindow.classList.contains("hidden")) {
+    document.querySelector(".chat_button i").classList.add("hide");
+    chatWindow.classList.add("hidden");
+  } else {
+    document.querySelector(".chat_button i").classList.remove("hide");
+    chatWindow.classList.remove("hidden");
+  }
+};
+
+const addUser = (userId) => {
+  const ulParticipants = document.querySelector(".participants ul");
+  if (ulParticipants.innerHTML.search(userId) === -1) {
+    const listElement = document.createElement("li");
+    listElement.innerHTML = `User Id - ${userId}`;
+    document.querySelector(".participants ul").append(listElement);
+  }
+};
+
+const showHideParticipants = () => {
+  const participantWindow = document.querySelector(".participants");
+  if (participantWindow.classList.contains("hidden")) {
+    participantWindow.classList.remove("hidden");
+    document.querySelector(".participant_button").classList.remove("hide");
+  } else {
+    participantWindow.classList.add("hidden");
+    document.querySelector(".participant_button").classList.add("hide");
+  }
+};
+
+const leaveMeetingButton = () => {
+  myPeer.disconnect();
+  window.location.replace("/disconnected_page");
+};
+
+const removeVideo = (video) => {
+  video.parentElement.remove();
+  video.remove();
 };
