@@ -6,11 +6,12 @@ let myVideoStream;
 const peers = {};
 const streamCalled = {}; // Since streams are called twice
 const SOCKET_IO_PORT = 4000;
+const IP_ADD = "127.0.0.1";
 
 // close peer connection when the browser closes
 
 $(() => {
-  const socket = io(`ws://localhost:${SOCKET_IO_PORT}`);
+  const socket = io(`wss://${IP_ADD}:${SOCKET_IO_PORT}`);
   userVideo = document.getElementById("user-video");
   videoGrid = document.getElementById("video-grid");
   myVideo = document.createElement("video");
