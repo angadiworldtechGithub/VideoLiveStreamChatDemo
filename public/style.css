@@ -60,10 +60,10 @@
   color: black;
   list-style: none;
   z-index: 100;
-  position: absolute;
-  bottom: 50px;
   width: 65%;
   height: 85%;
+  position: absolute;
+  bottom: 30px;
 }
 
 .participants {
@@ -157,4 +157,10 @@
   top: -2.5vw;
   height: 15vw;
   width: 20vw;
+}
+
+video {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
 }
