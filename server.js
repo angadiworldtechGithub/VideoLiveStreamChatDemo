@@ -11,25 +11,27 @@ const PEER_PORT = 3030;
 const EXPRESS_PORT = 3030;
 const SOCKET_IO_PORT = 4000;
 
-const IP_ADD = "198.168.1.11";
+const IP_ADD = "localhost";
 
 const key = fs.readFileSync("./cert.key");
 const cert = fs.readFileSync("./cert.crt");
 
 const app = express();
-const io = new SocketIOServer(undefined, {
+const ioServer = new HttpsServer({ key, cert });
+const io = new SocketIOServer(ioServer, {
   cors: {
     origin: [
-      `http://localhost:${EXPRESS_PORT}`,
-      `https://localhost:${EXPRESS_PORT}`,
       `https://${IP_ADD}:${EXPRESS_PORT}`,
+      `http://${IP_ADD}:${EXPRESS_PORT}`,
     ],
+    credentials: true,
   },
 });
-// Only if it on local
-const httpServer = new HttpsServer({ key, cert }, app);
 
-const peerServer = ExpressPeerServer(httpServer, {
+// Only if it on local
+const httpsServer = new HttpsServer({ key, cert }, app);
+
+const peerServer = ExpressPeerServer(httpsServer, {
   debug: true,
   port: PEER_PORT,
 });
@@ -83,17 +85,13 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(EXPRESS_PORT, "198.168.1.11", () => {
+httpsServer.listen(EXPRESS_PORT, IP_ADD, () => {
   console.log("Server is running");
 });
 
-io.listen(SOCKET_IO_PORT);
-console.log("Socket.io is running");
-
-// httpServer.on("request", (req) => {
-//   console.log("Incoming Request");
-//   console.log(req.method);
-// });
+ioServer.listen(SOCKET_IO_PORT, IP_ADD, () => {
+  console.log("Socketio server is running");
+});
 
 // Users can join the room
 // Users can open a peer connection and call other users.
