@@ -1,2 +1,1 @@
--Create Demo on Firebase
--Reverse the video feed
+Allow multiple video squares. (Only allows 2 users)
