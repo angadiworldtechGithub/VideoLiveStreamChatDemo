@@ -11,7 +11,7 @@ const PEER_PORT = 3030;
 const EXPRESS_PORT = 3030;
 const SOCKET_IO_PORT = 4000;
 
-const IP_ADD = "localhost";
+const IP_ADD = "192.168.0.103";
 
 const key = fs.readFileSync("./cert.key");
 const cert = fs.readFileSync("./cert.crt");
@@ -20,11 +20,7 @@ const app = express();
 const ioServer = new HttpsServer({ key, cert });
 const io = new SocketIOServer(ioServer, {
   cors: {
-    origin: [
-      `https://${IP_ADD}:${EXPRESS_PORT}`,
-      `http://${IP_ADD}:${EXPRESS_PORT}`,
-    ],
-    credentials: true,
+    origin: "*",
   },
 });
 

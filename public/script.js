@@ -6,12 +6,18 @@ let myVideoStream;
 const peers = {};
 const streamCalled = {}; // Since streams are called twice
 const SOCKET_IO_PORT = 4000;
-const IP_ADD = "127.0.0.1";
+// const ADD = "8a5f-171-76-85-164.ngrok-free.app";
+const ADD = "192.168.0.103:4000";
 
 // close peer connection when the browser closes
 
 $(() => {
-  const socket = io(`wss://${IP_ADD}:${SOCKET_IO_PORT}`);
+  const socket = io(`https://${Boolean(ADD) ? ADD : "localhost:4000"}`, {
+    extraHeaders: {
+      "ngrok-skip-browser-warning": "*",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
   userVideo = document.getElementById("user-video");
   videoGrid = document.getElementById("video-grid");
   myVideo = document.createElement("video");
@@ -127,7 +133,7 @@ function streamHandler(video) {
 }
 
 const scrollToBottom = () => {
-  var d = $(".chat_window");
+  var d = $(".messages");
   d.scrollTop(d.prop("scrollHeight"));
 };
 
