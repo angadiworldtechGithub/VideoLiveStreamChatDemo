@@ -5,8 +5,6 @@ let myVideo;
 let myVideoStream;
 const peers = {};
 const streamCalled = {}; // Since streams are called twice
-const SOCKET_IO_PORT = 4000;
-// const ADD = "8a5f-171-76-85-164.ngrok-free.app";
 const ADD = "192.168.0.103:4000";
 
 // close peer connection when the browser closes
@@ -14,7 +12,6 @@ const ADD = "192.168.0.103:4000";
 $(() => {
   const socket = io(`https://${Boolean(ADD) ? ADD : "localhost:4000"}`, {
     extraHeaders: {
-      "ngrok-skip-browser-warning": "*",
       "Access-Control-Allow-Origin": "*",
     },
   });
@@ -84,7 +81,7 @@ $(() => {
   });
   socket.on("createMessage", (message, userId) => {
     $(".messages").append(
-      `<li class="message"><b>User - <span class="user_id">${userId}</span></b><br/>${message}</li>`
+      `<li class="message resp-font-size"><b>User - <span class="user_id">${userId}</span></b><br/>${message}</li>`
     );
     scrollToBottom();
   });
@@ -181,7 +178,7 @@ const setMuteButton = () => {
 const setUnmuteButton = () => {
   const html = `
     <i class="unmute fas fa-microphone-slash"></i>
-    <span>Unmute</span>
+    <span class="mobile-hide">Unmute</span>
   `;
   document.querySelector(".mute_button").innerHTML = html;
 };
@@ -189,7 +186,7 @@ const setUnmuteButton = () => {
 const setStopVideo = () => {
   const html = `
     <i class="fas fa-video"></i>
-    <span>Stop Video</span>
+    <span class="mobile-hide">Stop Video</span>
   `;
   document.querySelector(".video_button").innerHTML = html;
 };
@@ -197,7 +194,7 @@ const setStopVideo = () => {
 const setPlayVideo = () => {
   const html = `
   <i class="stop fas fa-video-slash"></i>
-    <span>Play Video</span>
+    <span class="mobile-hide">Play Video</span>
   `;
   document.querySelector(".video_button").innerHTML = html;
 };
@@ -217,6 +214,7 @@ const addUser = (userId) => {
   const ulParticipants = document.querySelector(".participants ul");
   if (ulParticipants.innerHTML.search(userId) === -1) {
     const listElement = document.createElement("li");
+    listElement.classList.add("resp-font-size");
     listElement.innerHTML = `User Id - ${userId}`;
     document.querySelector(".participants ul").append(listElement);
   }

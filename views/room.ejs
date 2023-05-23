@@ -36,7 +36,7 @@
   <body>
       <div class="banner">
         <img src="\assets\images\logo.png" style="height:100%;margin-left: 10px;margin-top: 10px;">
-        <h4 style="float:right;margin:10px"><%= userId %></h4>
+        <h4 style="float:right;margin:10px;" class="resp-font-size"><%= userId %></h4>
       </div>
       <div class="mid_body">
         <div id="user-video">
@@ -61,22 +61,22 @@
           class="controls__button mute_button"
         >
           <i class="fas fa-microphone"></i>
-          <span>Mute</span>
+          <span class="mobile-hide">Mute</span>
         </div>
         <div
           onclick="playStop()"
           class="controls__button video_button"
         >
           <i class="fas fa-video"></i>
-          <span>Stop Video</span>
+          <span class="mobile-hide">Stop Video</span>
         </div>
         <div onclick="showHideParticipants()" class="controls__button">
           <i class="fas fa-user-friends participant_button"></i>
-          <span>Participants</span>
+          <span class="mobile-hide">Participants</span>
         </div>
         <div class="controls__button chat_button" onclick="showHideChat()">
           <i class="fas fa-comment-alt"></i>
-          <span>Chat</span>
+          <span class="mobile-hide">Chat</span>
         </div>
         <div class="controls__button leave__meeting__button" onclick="leaveMeetingButton()">
           <span class="leave__meeting">Leave Meeting</span>
